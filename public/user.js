@@ -1,75 +1,95 @@
-﻿const productList = document.getElementById('productList');
-const cartContainer = document.getElementById('cart');
-const productDetailsContainer = document.getElementById('productDetails'); // Add this line
+﻿const productDetailsContainer = document.getElementById('productDetails'); 
 
 // Initialize WebSocket connection
 const ws = new WebSocket('ws://localhost:3000');
+
 let products = [];
-let cart = loadCartFromLocalStorage();
+
 
 function renderProductList(products) {
-    if (!window.location.pathname.includes('productDetails.html')) { // Check if not on the product details page
-        productList.innerHTML = '<h3>Product List</h3>';
+    const vegetableProductList = document.getElementById('vegetableProductList');
+    const fruitProductList = document.getElementById('fruitProductList');
+    const dairyProductList = document.getElementById('dairyProductList');
 
-        products.forEach(product => {
-            const card = document.createElement('div');
-            card.classList.add('card');
-            card.innerHTML = `
-                <h4>${product.name}</h4>
-                <p>Price: $${product.price}</p>
-                <p>Image: ${product.img}</p>
-                <p>Unit: ${product.unit}</p>
-                <p>Brand: ${product.brand}</p>
-                <button onclick="showProductDetails(${product.id})">Details</button>
-                <button onclick="addToCart(${product.id})">Add to Cart</button>
-            `;
-            productList.appendChild(card);
-        });
+    if (!vegetableProductList || !fruitProductList || !dairyProductList) {
+        console.error('Category product lists not found.');
+        return;
     }
+
+    vegetableProductList.innerHTML = '<h3>Vegetables</h3>';
+    fruitProductList.innerHTML = '<h3>Fruits</h3>';
+    dairyProductList.innerHTML = '<h3>Dairy</h3>';
+
+    products.forEach(product => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.innerHTML = `
+            <img src="/images/${product.img}" alt="${product.name}" width="100px" height="100px">
+            <h4>${product.name}</h4>
+            <p>Price: ৳ ${product.price} TK</p>   
+            <p>Unit: ${product.unit}</p>
+            <p>Brand: ${product.brand}</p>
+            <button onclick="showProductDetails(${product.id})">Details</button>
+            <button onclick="addToCart(${product.id})">Add to Cart</button>
+        `;
+
+        // Append the card to the respective category list
+        if (product.category === 'vegetable') {
+            vegetableProductList.appendChild(card);
+        } else if (product.category === 'fruit') {
+            fruitProductList.appendChild(card);
+        } else if (product.category === 'dairy') {
+            dairyProductList.appendChild(card);
+        }
+    });
 }
 
 function showProductDetails(productId) {
-    // Navigate to productDetails.html with product ID
+    // Placeholder function for showing product details
     window.location.href = `productDetails.html?id=${productId}`;
 }
 
 function renderProductDetails(product) {
-    productDetailsContainer.innerHTML = `
-        <h4>${product.name}</h4>
-        <p>Price: $${product.price}</p>
-        <p>Image: ${product.img}</p>
-        <p>Unit: ${product.unit}</p>
-        <p>Brand: ${product.brand}</p>
-        <button onclick="addToCart(${product.id})">Add to Cart</button>
-    `;
-}
-
-function renderProductDetailsError() {
-    productDetailsContainer.innerHTML = '<p>Product details not available.</p>';
-}
-
-// ...
-
-// Listen for updates from the server
-ws.addEventListener('message', event => {
-    const updatedProducts = JSON.parse(event.data);
-    products = updatedProducts; // Update the local products array
-    renderProductList(updatedProducts);
-
-    if (window.location.pathname.includes('productDetails.html')) {
-        const productId = new URLSearchParams(window.location.search).get('id');
-        if (productId) {
-            const selectedProduct = products.find(product => product.id === parseInt(productId));
-            if (selectedProduct) {
-                renderProductDetails(selectedProduct);
+        productDetailsContainer.innerHTML = `
+            <img src="/images/${product.img}" alt="${product.name}" width="250px" height="250px">  
+            <h4>${product.name}</h4>
+            <p>Price: ৳ ${product.price} TK</p>
+            <p>Unit: ${product.unit}</p>
+            <p>Brand: ${product.brand}</p>
+            <p>Description: ${product.description}</p>
+            <button onclick="addToCart(${product.id})">Add to Cart</button>
+        `;
+    }
+    
+    function renderProductDetailsError() {
+        productDetailsContainer.innerHTML = '<p>Product details not available.</p>';
+    }
+    
+    
+    // // Listen for updates from the server
+    ws.addEventListener('message', event => {
+        const updatedProducts = JSON.parse(event.data);
+        products = updatedProducts; // Update the local products array
+        renderProductList(updatedProducts);
+    
+        if (window.location.pathname.includes('productDetails.html')) {
+            const productId = new URLSearchParams(window.location.search).get('id');
+            if (productId) {
+                const selectedProduct = products.find(product => product.id === parseInt(productId));
+                if (selectedProduct) {
+                    renderProductDetails(selectedProduct);
+                } else {
+                    renderProductDetailsError();
+                }
             } else {
                 renderProductDetailsError();
             }
-        } else {
-            renderProductDetailsError();
         }
-    }
-});
+    });
+
+
+const cartContainer = document.getElementById('cart');
+let cart = loadCartFromLocalStorage();
 
 function loadCartFromLocalStorage() {
     const cartFromStorage = localStorage.getItem('cart');
@@ -84,36 +104,50 @@ function addToCart(productId) {
     const selectedProduct = products.find(product => product.id === productId);
 
     if (selectedProduct) {
-        cart.push(selectedProduct);
+        const existingCartItem = cart.find(item => item.id === productId);
+
+        if (existingCartItem) {
+            // Product already in cart, increase quantity
+            existingCartItem.quantity = (existingCartItem.quantity || 1) + 1;
+        } else {
+            // Product not in cart, add with quantity 1
+            const newCartItem = { ...selectedProduct, quantity: 1 };
+            cart.push(newCartItem);
+        }
+
         saveCartToLocalStorage(); // Save cart to local storage
         alert('Product added to cart!');
-        
-        // Redirect to cart.html
-        window.location.href = 'cart.html';
+        renderCart(); // Update cart display
     } else {
         console.error('Selected product not found.');
     }
 }
-function renderCart() {
-    const cart = loadCartFromLocalStorage();
-    const cartContainer = document.getElementById('cart');
 
+function renderCart() {
     if (cartContainer) {
-        cartContainer.innerHTML = '<h3>Shopping Cart</h3>';
+        cartContainer.innerHTML = '';
 
         if (cart.length === 0) {
             cartContainer.innerHTML += '<p>Your cart is empty.</p>';
         } else {
-            const cartTotal = cart.reduce((total, product) => total + product.price, 0);
+            const cartTotal = cart.reduce((total, product) => total + product.price * product.quantity, 0);
             const cartElement = document.createElement('div');
             cartElement.classList.add('cart');
-            cartElement.innerHTML = `
-                <ul>
-                    ${cart.map(product => `<li>${product.name} - $${product.price}</li>`).join('')}
-                </ul>
-                <p>Total: $${cartTotal}</p>
-                <button onclick="checkout()">Checkout</button>
-            `;
+            cartElement.innerHTML = cart.map(product => `
+                <div class="cart-item">
+                    <img src="/images/${product.img}" alt="${product.name}" width="50" height="50">
+                    <div class="cart-item-details">
+                        <p>${product.name}</p>
+                        <p>৳ ${product.price} TK</p>
+                        <input type="number" value="${product.quantity}" min="1" onchange="updateQuantity(${product.id}, this.value)">
+                        <button onclick="removeFromCart(${product.id})">Remove</button>
+                    </div>
+                </div>`
+            ).join('');
+
+            cartElement.innerHTML += `<p>Total: ৳ ${cartTotal} TK</p>`;
+            cartElement.innerHTML += `<button onclick="checkout()">Checkout</button>`;
+
             cartContainer.appendChild(cartElement);
         }
     } else {
@@ -121,20 +155,89 @@ function renderCart() {
     }
 }
 
+function updateQuantity(productId, newQuantity) {
+    const selectedProduct = cart.find(product => product.id === productId);
+
+    if (selectedProduct) {
+        selectedProduct.quantity = parseInt(newQuantity, 10);
+        saveCartToLocalStorage(); // Save updated cart to local storage
+        renderCart(); // Update cart display
+    } else {
+        console.error('Selected product not found in the cart.');
+    }
+}
+
+function removeFromCart(productId) {
+    cart = cart.filter(product => product.id !== productId);
+    saveCartToLocalStorage(); // Save updated cart to local storage
+    renderCart(); // Update cart display
+}
+
 // Load cart on cart.html page
 renderCart();
 
 function checkout() {
-    alert('Order placed successfully!');
-    clearCart(); // Clear the cart after checkout
-    renderCart(); // Update cart display
-}
+    const customerName = prompt('Enter your name:');
+    const customerAddress = prompt('Enter Address:');
+    const customerPhone = prompt('Enter Phone no:');
 
+    if (customerName && customerAddress && customerPhone) {
+        const orderDetails = {
+            name: customerName,
+            address: customerAddress,
+            phone: customerPhone,
+            cart: cart,
+            total: calculateCartTotal(),
+        };
+
+        
+        clearCart(); 
+        renderCart(); // Update cart display
+
+        alert('Order placed successfully! Thank you for shopping with us.\nOrder Details:\n' +
+            `Name: ${customerName}\nAddress: ${customerAddress}\nPhone: ${customerPhone}\nTotal Amount: ৳ ${orderDetails.total} TK`);
+    } else {
+        alert('Invalid input. Please provide valid information.');
+    }
+}
 function clearCart() {
     localStorage.removeItem('cart');
 }
 
+function calculateCartTotal() {
+    return cart.reduce((total, product) => total + product.price * product.quantity, 0);
+}
+
+    
+
+// Listen for updates from the server
+ws.addEventListener('message', event => {
+    const updatedProducts = JSON.parse(event.data);
+    console.log('Received updated products:', updatedProducts);
+    products = updatedProducts; // Update the local products array
+    renderProductList(products);
+});
 
 
-// Initial rendering
-renderProductList([]);
+
+// Toggle btn
+
+$(".menu-item .sub-btn").click(function () {
+    $(this).next(".sub-menu").slideToggle();
+    $(this).find(".fa-angle-down").toggleClass("rotated"); 
+});
+
+
+var menu = document.querySelector(".menu");
+var menuBtn = document.querySelector(".menu-btn");
+var closeBtn = document.querySelector(".close-btn");
+
+menuBtn.addEventListener("click", () => {
+    menu.classList.add("active");
+});
+
+closeBtn.addEventListener("click", () => {
+    menu.classList.remove("active");
+});
+
+

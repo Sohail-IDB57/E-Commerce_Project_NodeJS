@@ -7,14 +7,110 @@
     <title>Admin Panel</title>
 </head>
 <body>
-    <div class="container">
-        <h2>Product List</h2>
-        <div id="productList"></div>
-        <button id="addProductBtn">Add Product</button>
-        <button id="updateProductBtn">Update Product</button>
-        <button id="removeProductBtn">Remove Product</button>
+
+    <div id="acton">
+        <button onclick="displaySection('add')">Add Product</button>
+        <button onclick="displaySection('update')">Update Product</button>
+        <button onclick="displaySection('remove')">Remove Product</button>
     </div>
-   
+
+    <div id="addProductSection" style="display: none;">
+        <form id="addProductForm">
+            <label for="productNameAdd">Name:</label>
+            <input type="text" id="productNameAdd" name="productNameAdd" required>
+
+            <label for="productPriceAdd">Price:</label>
+            <input type="number" id="productPriceAdd" name="productPriceAdd" required>
+
+            <label for="productUnitAdd">Unit:</label>
+            <input type="text" id="productUnitAdd" name="productUnitAdd" required>
+
+            <label for="productBrandAdd">Brand:</label>
+            <input type="text" id="productBrandAdd" name="productBrandAdd" required>
+
+            <label for="categoryAdd">Category:</label>
+            <select id="categoryAdd" name="categoryAdd">
+                <option value="vegitable">Vegitable</option>
+                <option value="fruit">Fruit</option>
+                <option value="dairy">Dairy</option>
+            </select>
+
+            <label for="descriptionAdd">Description:</label>
+            <textarea id="descriptionAdd" name="descriptionAdd" rows="1" required></textarea>
+
+            <input type="file" id="imageInputAdd" accept="image/*">
+            <img id="image" src="" alt="Image" style="max-width: 100px; max-height: 100px; margin-top: 10px; display: none;">
+
+            <button type="reset">Reset</button>
+            <button type="submit">Add</button>
+        </form>
+    </div>
+
+    <div id="updateProductSection" style="display: none;">
+        <form id="updateProductForm">
+            <label for="updateProductId">Product ID:</label>
+            <input type="number" id="updateProductId" name="updateProductId" required>
+
+            <label for="updateProductName">Name:</label>
+            <input type="text" id="updateProductName" name="updateProductName" required>
+
+            <label for="updateProductPrice">Price:</label>
+            <input type="number" id="updateProductPrice" name="updateProductPrice" required>
+
+            <label for="updateProductUnit">Unit:</label>
+            <input type="text" id="updateProductUnit" name="updateProductUnit" required>
+
+            <label for="updateProductBrand">Brand:</label>
+            <input type="text" id="updateProductBrand" name="updateProductBrand" required>
+
+            <label for="updateCategory">Category:</label>
+            <select id="updateCategory" name="updateCategory">
+                <option value="vegitable">Vegitable</option>
+                <option value="fruit">Fruit</option>
+                <option value="dairy">Dairy</option>
+            </select>
+
+            <label for="updateDescription">Description:</label>
+            <textarea id="updateDescription" name="updateDescription" rows="1" required></textarea>
+
+            <input type="file" id="updateImageInput" accept="image/*">
+            <img id="updateProductImg" src="" alt="Image" style="max-width: 100px; max-height: 100px; margin-top: 10px; display:none;">
+
+            <button type="reset">Reset</button>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+
+    <div id="removeProductSection" style="display: none;">
+        <form id="removeProductForm">
+            <label for="removeProductId">Product ID:</label>
+            <input type="number" id="removeProductId" name="removeProductId" required>
+
+            <button type="reset">Reset</button>
+            <button type="submit">Remove</button>
+        </form>
+    </div>
+
+    <div class="container">
+
+        <div id="categories">
+            <section id="vegetable" class="category">
+                <h2>Vegetables</h2>
+                <div id="vegetableProductList"></div>
+            </section>
+
+            <section id="fruit" class="category">
+                <h2>Fruits</h2>
+                <div id="fruitProductList"></div>
+            </section>
+
+            <section id="dairy" class="category">
+                <h2>Dairy</h2>
+                <div id="dairyProductList"></div>
+            </section>
+        </div>
+    </div>
+
     <script src="admin.js"></script>
 </body>
 </html>

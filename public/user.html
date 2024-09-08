@@ -1,23 +1,99 @@
-﻿<!DOCTYPE html>
+﻿<!-- user.html -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="user.css">
-    <title>User Page</title>
+    <title>SHOP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="user.css" rel="stylesheet" />
 </head>
 <body>
     <header>
-        
+        <img id="logo" src="images\Shop.png" alt="SHOP Logo">
+        <div class="navigation">
+            <ul class="menu">
+                <div class="close-btn"></div>
+                <li class="menu-item">
+                    <a href="user.html">
+                        <i class="fa fa-home" aria-hidden="true"></i>
+                        <span class="title">Home</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="sub-btn" href="#">
+                        <i class="fa fa-list" aria-hidden="true"></i>
+                        <span class="title">Categories <i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                    </a>
+                    <ul class="sub-menu">
+
+                        <li><a href="#Vegitable">Vegitable</a></li>
+                        <li><a href="#Fresh Fruit">Fresh Fruit</a></li>
+                        <li><a href="#Dairy Food">Dairy Food</a></li>
+                    </ul>
+                </li>
+
+                <li class="menu-item">
+                    <a href="about.html">
+                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                        <span class="title">About Us</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="contact.html">
+                        <span class="icon"><i class="fa fa-address-book" aria-hidden="true"></i></span>
+                        <span class="title">Contact</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="cart.html">
+                        <span class="icon"><i class="fa fa-shopping-cart" aria-hidden="true"></i></span>
+                        <span class="title">Cart</span>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+
+        <div id="search-container">
+            <input type="text" id="search-box" placeholder="Search...">
+        </div>
+        <div class="menu-btn"></div>
     </header>
+
+
     <div class="container">
-        <h2>Product List</h2>
-        <div id="productList"></div>
-        <!-- <h2>Shopping Cart</h2>
-        <div id="cart"></div> -->
+
+        <div id="categories">
+
+            <section id="vegetable" class="category">
+                <h2>Vegetables</h2>
+                <div id="vegetableProductList"></div>
+            </section>
+
+            <section id="fruit" class="category">
+                <h2>Fruits</h2>
+                <div id="fruitProductList"></div>
+            </section>
+
+            <section id="dairy" class="category">
+                <h2>Dairy</h2>
+                <div id="dairyProductList"></div>
+            </section>
+        </div>
+
+        <div class="left">
+            <h2>Shopping Cart</h2>
+            <div id="cart"></div>
+
+        </div>
     </div>
-    
-    
+
+
+    <footer>
+    </footer>
+
     <script src="user.js"></script>
 </body>
 </html>
